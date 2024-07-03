@@ -310,7 +310,8 @@ You should return this output:
 ]
 """
 
-
+def sort_reindeer(reindeer_names: list):
+    return sorted(reindeer_names, key=lambda s: s.split()[1]) # выполняется внутри лямбда-функции, чтобы извлечь второе слово в каждой строке
 
 
 """
@@ -486,5 +487,53 @@ thousands = " M MM MMM".split(" ")
 
 def solution(n):
     return thousands[n//1000] + hundreds[n%1000//100] + tens[n%100//10] + units[n%10]
+
+"""
+22
+сравнение букв с одной строки на наличие в другой
+"""
+def scramble(s1: str, s2: str) -> bool:
+    return all(s1.count(char) >= s2.count(char) for char in set(s2)) # если в ОЛЛ уровнение правильное то вернет тру, внутри один счетчик больше другого по итерации уникальних сет значений
+
+"""
+23
+волна букв, тоесть каждая буква по очереди становиться заглавной
+"""
+
+text = "hello" 
+def wave(text: str):       
+    return [text[:i] + text[i].upper() + text[i + 1:] for i in range(len(text)) if text[i].isalpha()]  # берем одну часть слова до нужного индекса + букву которую надо и добавляем остаток слова.
+# Поскольку в строке нельзя поменять букву по индексу"""
+
+
+"""
+24
+В этом ката ваша задача - создать все перестановки непустой входной строки и удалить дубликаты, если они есть.
+With input 'a': Your function should return: ['a']
+With input 'ab': Your function should return ['ab', 'ba']
+With input 'abc': Your function should return ['abc','acb','bac','bca','cab','cba']
+With input 'aabb': Your function should return ['aabb', 'abab', 'abba', 'baab', 'baba', 'bbaa']
+"""
+from itertools import permutations
+s = ("abc")
+def print_all_permutations(s: str):
+    new_list = []
+    perm = permutations(s) #составляет список из всех разных возможностей переставляя данные
+    for p in perm:
+        new_list.append(''.join(p))
+    return list(set(new_list))
+
+"""
+25
+Найти факториал и вичислить из него количество нулей
+"""
+from functools import reduce
+
+def zeros(n):
+    if n == 0:
+        return 0
+    a = reduce(lambda x, y: x * y, list(range(1, n+1)))  #функция вычисляет факторил, умножая по очереди все цыфры
+    result = [int(i) for i in str(a)] # переводим в строку что бы посчитать количество нулей
+    return result.count(0)
 
 
