@@ -536,4 +536,143 @@ def zeros(n):
     result = [int(i) for i in str(a)] # переводим в строку что бы посчитать количество нулей
     return result.count(0)
 
+"""
+26
+выводить сумму всех чисел пока не будет одиночное число
+"""
+s = 493193  #  4 + 9 + 3 + 1 + 9 + 3 = 29  -->  2 + 9 = 11  -->  1 + 1 = 2
+
+def digital_root(s):
+    while s >= 10:
+        s = eval("+".join(str(s))) # посчитай мне по знаку что я указываю результат в строке
+    return s
+
+
+"""
+27
+# ('Hello world !')     # elloHay orldway !
+"""
+
+text = ('Pig latin is cool') # igPay atinlay siay oolcay
+
+def pig_it(text: str):  
+    new_list = []
+    for word in text.split():
+        if word.isalpha():
+            new_word = word[1:] + word[0] + "ay"
+        else:
+            new_word = word
+        new_list.append(new_word) 
+    return " ".join(new_list)
+
+"""
+28
+нули в списке должны быть в конце
+"""
+def move_zeros(lst):
+    new_list1 = []
+    new_list2 = []
+    for num in text:
+        if num == 0:
+            new_list1.append(num)
+        else:
+            new_list2.append(num)
+    return new_list2 + new_list1
+
+"""
+29
+
+"""
+arr1 = [13, 64, 15, 17, 88]
+arr2 = [23, 14, 53, 17, 80]
+# get_larger_numbers(arr1, arr2) == [23, 64, 53, 17, 88]
+
+def get_larger_numbers(a, b):
+    return [max(num) for num in zip(a, b)]
+
+print(get_larger_numbers(arr1, arr2))
+
+"""
+30
+"""
+def add(*args):
+    result = []
+    try:
+        for rows in zip(*args):
+            sumall = [sum(elements) for elements in zip(*rows)]
+            result.append(sumall)
+            return result
+    except:
+        raise ValueError("Given matrices are not the same size.")
+
+# Пример матриц для суммирования
+mat1 = [[1, -2, 3], [-4, 5, -6], [7, -8, 9]]
+mat2 = [[2, -1, 3], [0, -2, 1], [4, -5, 6]]
+mat3 = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+
+# Вызов функции с матрицами
+add(mat1, mat2, mat3)
+
+
+"""
+31
+[7]должно вернуться 7, потому что оно встречается 1 раз (что нечетно).
+[0]должно вернуться 0, потому что оно встречается 1 раз (что нечетно).
+[1,1,2]должно вернуться 2, потому что оно встречается 1 раз (что нечетно).
+[0,1,0,1,0]должно вернуться 0, потому что оно встречается 3 раза (что нечетно).
+[1,2,2,3,3,3,4,3,3,3,2,2,1]должно вернуться 4, потому что оно встречается 1 раз (что нечетно).
+"""
+from collections import Counter
+
+
+def find_it(seq):
+    a = Counter(seq)
+    for key, value in a.items():
+        if value % 2 != 0:
+            return key
+
+
+
+"""
+32
+calculator and test without class
+"""
+import pytest
+
+class Calculator:
+
+    def __init__(self, expression: str) -> None:
+        self.expression = expression
+
+    def calculate(self):
+        try:
+            result = eval(self.expression)
+            return result
+        except Exception as e:
+            return f"Error: {e}"
+
+class TestCalculate:
+
+    def test_first(self):
+        calc = Calculator("2+2")
+        assert calc.calculate() == 4
+
+    def test_second(self):
+        calc = Calculator("150-140")
+        assert calc.calculate() == 10
+
+    def test_third(self):
+        calc = Calculator("10*10")
+        assert calc.calculate() == 100
+
+    def test_fourth(self):
+        calc = Calculator("200/100")
+        assert calc.calculate() == 2
+
+    def test_fiveth(self):
+        calc = Calculator("10/0")
+        assert "Error" in calc.calculate()
+
+if __name__ == "__main__":
+    pytest.main()
 
