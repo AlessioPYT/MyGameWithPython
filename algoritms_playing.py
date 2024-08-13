@@ -356,6 +356,16 @@ dicti1 = [key for value in dicti.items() for key in value]
 
 print(dicti1)
 
+# и обратно
+
+dicti1 = ["age", 34, "name", "Alex", "city", "Kiev"]
+
+# Преобразуем обратно в словарь
+keys = dicti1[::2]  # Каждое второе значение начиная с первого (ключи)
+values = dicti1[1::2]  # Каждое второе значение начиная со второго (значения)
+
+dicti = dict(zip(keys, values))
+
 
 """
 16
@@ -675,4 +685,153 @@ class TestCalculate:
 
 if __name__ == "__main__":
     pytest.main()
+
+"""
+33
+n = 89; p = 1 ---> 1 since 8¹ + 9² = 89 = 89 * 1
+
+n = 92; p = 1 ---> -1 since there is no k such that 9¹ + 2² equals 92 * k
+
+n = 695; p = 2 ---> 2 since 6² + 9³ + 5⁴= 1390 = 695 * 2
+
+n = 46288; p = 3 ---> 51 since 4³ + 6⁴+ 2⁵ + 8⁶ + 8⁷ = 2360688 = 46288 * 51
+"""
+
+def dig_pow(n, p):
+    new_list = []
+    for i in str(n):
+        new_list.append(int(i)**p)  # перебираем 
+        p += 1                       # добавляем счетчик
+    return (sum(new_list) / n) if (sum(new_list) % n == 0) else -1  # возвращаем сумму поеделенную на н если сумма делить на это число без остатка
+
+
+"""
+34
+piramida "*"
+"""
+
+def tower_builder(n_floors):
+    for i in range(n_floors):
+        spaces = ' ' * (n_floors - i - 1)
+        stars = '*' * (2 * i + 1)
+        print(list(spaces + stars))
+
+"""
+35 
+способ пронумерировать словарь и вообще вывести буквы по ord() chr()
+"""
+print(ord("a"))
+start = 1072
+end = 1103
+lett = [chr(x) for x in range(start, end)]
+print(lett)
+new_dict = {num: let for num, let in enumerate(lett, start=1)}
+print(new_dict)
+
+"""
+36
+рекурсия для обхода словаря и поиска необходимого значения
+"""
+
+users_dict = {
+    'user_1': {'user_1_1': {'user_1_2': {'user_1_3': 'Maryna Viazovska'}}},'user_2': 'Lina Kostenko','user_3': {'user_3_1': 'Kateryna Bilokur'}}
+
+a = users_dict.get("user_1").get("user_1_1").get("user_1_2").get("user_1_3")
+b = users_dict.get("user_2")
+c = users_dict.get("user_3").get("user_3_1")
+
+print(a, b, c)
+
+def some_func(d):
+    new_list = []
+    def rescui_items(d: dict):
+        if isinstance(d, dict):
+            for key, value in d.items():
+                rescui_items(value)
+        elif isinstance(d, list):
+            for items in d:
+                rescui_items(items)
+        elif isinstance(d, set):
+            for num in d:
+                rescui_items(num)
+        elif isinstance(d, str):
+            if " " in d:
+                new_list.append(d)
+    rescui_items(d)
+    return new_list
+        
+print(some_func(users_dict))
+
+
+"""
+37
+математические функции
+"""
+# seven(times(five()))  35
+# four(plus(nine()))  13
+# eight(minus(three()))  5
+# six(divided_by(two()))  3
+
+
+def zero(act=None): 
+    if act:
+        return act(0)
+    return 0
+
+def one(act=None): 
+    if act:
+        return act(1)
+    return 1
+
+def two(act=None): 
+    if act:
+        return act(2)
+    return 2
+
+def three(act=None): 
+    if act:
+        return act(3)
+    return 3
+
+def four(act=None): 
+    if act:
+        return act(4)
+    return 4
+
+def five(act=None): 
+    if act:
+        return act(5)
+    return 5
+
+def six(act=None): 
+    if act:
+        return act(6)
+    return 6
+
+def seven(act=None): 
+    if act:
+        return act(7)
+    return 7
+
+def eight(act=None): 
+    if act:
+        return act(8)
+    return 8
+
+def nine(act=None): 
+    if act:
+        return act(9)
+    return 9
+
+def plus(num): 
+    return lambda x: x + num
+def minus(num): 
+    return lambda x: x - num
+def times(num): 
+    return lambda x: x * num
+def divided_by(num): 
+    return lambda x: int(x / num)
+
+print(seven(divided_by(nine())))
+
 
