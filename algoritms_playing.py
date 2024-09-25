@@ -2,13 +2,13 @@
 
 """
 1 task
-есть список и необходимо каждое второе число уможить на два. ну или другую любую манипуляцию. Использовал декоратор для усложнения
+I have a list and need to multiply every second number by two. or any other manipulation. I used a decorator to make it more complicated
 """
 
-def generator(func):  # делаем декор для выбора каждого второго числа и умножения на 2 его
+def generator(func):  # make a decor to select every second number and multiply it by 2.
     def inner(*args, **kwargs):
         result = func(*args, **kwargs)
-        for i in range(1, len(result), 2):   #  ЗАПОМНИТЬ !!!!  необходимо именно длина списка а не просто список
+        for i in range(1, len(result), 2):   #  REMEMBER !!!! it is the length of the list that is needed, not just the list.
             result[i] = result[i]*2
         return result
     return inner
@@ -18,8 +18,8 @@ new_list = old_list[1::2]
 new_list1 = old_list[0::2]
 
 @generator  
-def generate(old_list, new_list):  # теперь основная функц которая создает из двух списков один, внедряя один в другой а не чередуя их
-    new_list1 = [i for a in zip(old_list, new_list) for i in a]   # ЗАПОМНИТЬ !!!!!   i for a in zip(old_list, new_list) создает тапл пар (1,3), (2,4) за второю итерацию ми перебираем пари таплов и вносим их поочередно в список
+def generate(old_list, new_list):  # now the main function that creates one list from two lists, embedding one into the other and not alternating them.
+    new_list1 = [i for a in zip(old_list, new_list) for i in a]   # REMEMBER !!!!! i for a in zip(old_list, new_list) creates taple pairs (1,3), (2,4) for the second iteration we loop through the taple pairs and add them one by one to the list.
     return new_list1
 
 print(generate(new_list1, new_list))  #  [1, 4, 3, 8]
@@ -762,6 +762,22 @@ def some_func(d):
         
 print(some_func(users_dict))
 
+# второй вариант более гибкий и автоматизированый и принимает значение которое надо искать
+
+def find_value(data, target):
+    new_list = []
+    if isinstance(data, dict):
+        for key, value in data.items():
+            new_list.extend(find_value(value, target))
+            new_list.extend(find_value(key, target))
+    elif isinstance(data, list):
+        for it in data:
+            new_list.extend(find_value(it, target))
+    elif isinstance(data, str):
+        if target in data:
+            new_list.append(target)
+    return new_list
+
 
 """
 37
@@ -834,4 +850,211 @@ def divided_by(num):
 
 print(seven(divided_by(nine())))
 
+"""
+38
+СОРТИРОВКА СЛОВАРЕЙ ПО КЛЮЧУ!!!
 
+Это работает, потому что кортежи упорядочиваются, а кортежи упорядочиваются лексикографически 
+(то есть они сортируются сначала по первым элементам, затем по вторым и так далее). 
+Таким образом, мы эффективно сортируем кортежи из двух элементов по их ключам.
+"""
+counts = {"sandwiches": 10, "drinks": 20, "oranges": 7}
+
+print(counts.items())
+print(sorted(counts.items()))
+
+def sorted_counts(a: dict):
+    return dict(sorted(a.items()))
+
+print(sorted_counts(counts))
+
+
+"""
+39
+СОРТИРОВКА СЛОВАРЕЙ ПО ЗНАЧЕНИЮ!!!
+
+Это работает, потому что в Python функции - это объекты.
+
+Функция sorted опирается на тот факт, что мы можем передавать функции так же, как и любые другие объекты. 
+Функция sorted будет вызывать заданный аргумент key, поэтому ключ должен быть функцией (или другим вызываемым объектом).
+"""
+# 1
+# 1
+counts = {"sandwiches": 10, "drinks": 20, "oranges": 7}
+sorted_counts = {key: value for (value, key) in sorted((value, key) for (key, value) in counts.items())}
+
+print(sorted_counts)
+
+# 2
+def value_of(item):
+    """Return value given a (key, value) tuple."""
+    key, value = item
+    return value
+
+for item in counts.items():
+    print(value_of(item))
+
+print(value_of(("sandwiches", 10)))
+
+sorted_counts = dict(sorted(counts.items(), key=value_of))
+print(sorted_counts)
+
+"""
+40
+массив чисел и количество повторений даеться, вывести не больше количества повторений
+"""
+num = [1, 1, 3, 3, 7, 2, 2, 2, 2] # [1, 1, 3, 3, 7, 2, 2, 2]
+qunt = 3 
+
+def delete_nth(order,max_e):
+    new_dict = {}
+    new_list = []
+    for i in order:
+        if i not in new_dict:
+            new_dict[i] = 0
+        if new_dict[i] <= max_e:
+            new_list.append(i)
+            new_dict[i] += 1
+    return new_list
+
+"""
+41
+вичислить сумму каждого числа и отсортировать его, использовал декоратор для вычислении суммы и тренировки использования.
+"""
+rec = ("103 123 4444 99 2000") # "2000 103 123 4444 99"
+
+def sum_numb(func):
+    def inner(strng, *argы, **kwargы):
+        def sum_numb(num):
+            return sum(int(i) for i in num)
+        result = func(strng, sum_numb)
+        return result
+    return inner
+
+@sum_numb
+def order_weight(strng: str, sum_numb):
+    res = strng.split()
+    res.sort(key=lambda x: (sum_numb(x), x))
+    return " ".join(res)
+
+print(order_weight(rec))
+
+"""
+42
+ДЕКОРАТОР!!!
+"""
+import time
+
+"""
+        1. Сумма чисел: Напишите функцию, которая принимает два числа и возвращает их сумму. 
+        Добавьте проверку, чтобы убедиться, что оба аргумента являются числами.
+"""
+
+def check(func):
+    def inner(*args, **kwargs):
+        result = func(*args, **kwargs)
+        if all(isinstance(i, int) for i in args):
+            return result
+        else:
+            return f"please enter int"
+    return inner
+
+@check
+def sumari(a, b):
+    return a + b 
+print(sumari(2, 3))
+
+
+"""
+        2. Факториал: Напишите функцию, которая принимает одно число и возвращает его факториал. 
+        Учтите, что факториал отрицательного числа не определен.
+"""
+
+def facto(func):
+    def inner(*args):
+        n = args[0]
+        if n == 0 or n == 1:
+            return 1
+        return func(*args)
+    return inner
+
+@facto
+def factorial(n):
+    return n * factorial(n - 1)
+    
+print(factorial(5))
+
+"""
+        3. Палиндром: Напишите функцию, которая принимает строку и возвращает True, 
+        если она является палиндромом (читается одинаково с обеих сторон), 
+        и False в противном случае.
+"""
+
+def some_decor(func):
+    def inner(*args):
+        s = args[0]
+        if isinstance(s, str):
+            if s == s[::-1]:
+                return func(*args)
+            else:
+                return False
+    return inner
+
+@some_decor
+def palindrom(s: str) -> str:
+    return f"This is palindrom {s}"
+
+print(palindrom("asa"))
+
+
+"""
+        4 Декоратор для замера времени: Напишите декоратор, который измеряет время выполнения функции и выводит его на экран. 
+        Примените этот декоратор к функции, которая вычисляет сумму всех чисел от 1 до N.
+"""
+
+def to_do_it(name: str):
+    def time_to_action(func):
+        def inner(*args, **kwargs):
+            start = time.perf_counter()
+            result = func(*args, **kwargs)
+            duration = time.perf_counter() - start
+            print(f"{name} duration: {duration:.6f} seconds")
+            return result
+        return inner
+    return time_to_action
+
+@to_do_it("Summing all numbers")
+def summ_all(n):
+    if n <= 0:
+        return f"It must be > 0, got {n}."
+    elif n == 1:
+        return 1 
+    else:
+        return n + summ_all(n - 1)
+
+print(summ_all(20)) 
+
+"""
+        5. Декоратор с параметрами: Напишите декоратор, который принимает параметр num_repeats. 
+        Этот декоратор должен вызывать обернутую функцию num_repeats раз и выводить результат выполнения. 
+        Примените этот декоратор к функции, которая возвращает случайное число.
+"""
+
+from random import randint
+
+
+def num_repaets(quant: int):
+    def wrapper(func):
+        def inner():
+            for _ in range(quant):
+                res = func()
+                print(res)
+            return res
+        return inner
+    return wrapper
+
+@num_repaets(4)
+def rand_int():
+    return randint(1, 100)
+
+print(rand_int())
