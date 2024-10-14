@@ -582,7 +582,7 @@ def pig_it(text: str):
 def move_zeros(lst):
     new_list1 = []
     new_list2 = []
-    for num in text:
+    for num in lst:
         if num == 0:
             new_list1.append(num)
         else:
@@ -1058,3 +1058,330 @@ def rand_int():
     return randint(1, 100)
 
 print(rand_int())
+
+
+"""
+43  баловоство с ООП и датасловари
+"""
+
+from collections import UserDict
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+
+class Product(UserDict):
+
+    def __init__(self, name: str, price: int):
+        logger.info("recieved product")
+        super().__init__()
+        self.name = name
+        self.price = price
+        self.data[self.name] = self.price
+
+    def __str__(self) -> str:
+        logger.info("return product")
+        return f"Product: {self.name}, Price: {self.price}"
+    
+    def __eq__(self, other):
+        logger.info("hesh 1")
+        return self.name == other.name and self.price == other.price
+
+    def __hash__(self):
+        logger.info("hesh 2")
+        return hash((self.name, self.price))  # Используем кортеж для хэширования
+    
+class Cart(UserDict):
+
+    def __init__(self):
+        super().__init__()
+
+    def add_product(self, product: Product, quantity: int):
+        logger.info("in cart was add")
+        self.data[product] = quantity
+
+    def remove_product(self, product: Product):
+        logger.info("from cart was removed")
+        self.data.pop(product, None)  # Безопасное удаление продукта
+
+    def get_total_price(self):
+        logger.info("recieved to total price")
+        total = 0
+        for product, quantity in self.data.items():
+            total += product.price * quantity  # Рассчитываем общую цену
+        return total
+
+    def __str__(self) -> str:
+        logger.info("work str in cart")
+        if not self.data:  # Если корзина пуста
+            return "Cart is empty"
+        result = ""
+        for product, quantity in self.data.items():
+            result += f"Product: {product.name}, quantity: {quantity}\n"
+        return result.strip()  # Возвращаем результат без лишних переносов строки
+
+    def is_product_available(self, prod):
+        product = Product
+        if prod in product.name and Cart.data:
+            return True
+
+class TestStart:
+    pass
+
+
+if __name__ == "__main__":
+    product1 = Product("apple", 45)
+    product2 = Product("banan", 59)
+    cart = Cart()
+    cart.add_product(product1, 10)
+    cart.add_product(product2, 23)
+    print(product1)
+    print(product2)
+    print(cart)
+    print(cart.get_total_price())
+
+
+"""
+44. Анализ текстового файла
+Описание: Напишите программу, которая считывает текстовый файл и выполняет анализ текста.
+
+Программа должна:
+Подсчитать общее количество слов и предложений в файле.
+Найти 5 самых частых слов и их частоту.
+Для каждого предложения вернуть длину предложения (количество слов) и сам текст предложения.
+Данные:
+
+Используйте строку для обработки текста.
+Используйте список для хранения слов и длины предложений.
+Используйте словарь для подсчета частоты слов.
+Результаты должны быть возвращены в виде словаря.
+"""
+
+from typing import Any
+from collections import Counter
+import string
+
+class CreateFile:
+
+    def __init__(self, file_name: str, mode_file: str = "r") -> None:
+        self.name_file = file_name
+        self.mode_file = mode_file
+        self.file = open(self.name_file, self.mode_file)
+
+    def __getattribute__(self, attr) -> Any:
+        if attr in ['name_file', 'mode_file', 'file']:
+            return object.__getattribute__(self, attr)
+        return getattr(self.file, attr)
+    
+    def __enter__(self):
+        return self.file
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            print(f"Exception caught: {exc_type}, {exc_value}")
+        self.file.close()
+        return True
+
+    def close(self):
+        if self.file:
+            self.file.close()
+    
+    def __del__(self):
+        self.close()  # Закрываем файл при удалении объекта
+
+
+class MetodsWithFile:
+    
+    def __init__(self, file: CreateFile) -> None:
+        self.file = file
+        self.text = self.file.read() # Читаем содержимое файла один раз и сохраняем его в переменной
+
+    def total_words(self):
+        words = self.text.split()
+        cleaned_words = [word.strip(string.punctuation) for word in words]
+        word_count = len(cleaned_words)
+        return word_count
+
+
+    def often_words(self):
+        res = Counter(self.text.split())  # Подсчитываем количество вхождений слов
+        new_list = [key for key, value in res.items() if value >= 5]  # Добавляем слова, встречающиеся 5 и более раз
+        return new_list
+
+    def len_text(self):
+        return len(self.text.split("."))
+
+if __name__ == "__main__":
+    example = CreateFile("new_text.txt", "r")
+    manip = MetodsWithFile(example)
+    print(manip.total_words())
+    print(manip.often_words())
+    print(manip.len_text())
+
+"""
+45 Просто класс при инит открывает джейсон файл потом пара манипуляций и сохранения
+практика 
+"""
+
+import json
+import logging
+
+class DataManager:
+
+    def __init__(self, data, mode = "r") -> None:
+        self.filepath = data
+        self.mode = mode
+        try:
+            with open(self.filepath, "r") as file:
+                self.data = json.load(file)
+                logging.info("its ok")
+        except json.JSONDecodeError as e:
+            logging.exception(f"Ошибка при загрузке JSON: {e}")
+        except FileNotFoundError as e:
+            logging.exception(f"Файл не найден: {e}")
+        except Exception as e:
+            logging.exception(f"Произошла ошибка: {e}")
+        
+        
+    def add_person(self, name, *grades):
+        new_name = {"name": name, "grades": {'math': grades[0], 'history': grades[1], 'physics': grades[2]}}
+        self.data.append(new_name)
+        logging.info(f"{new_name} was added in {self.data}")
+
+
+    def update_person_info(self, name, what, info):
+        for person in self.data:
+            if what == "name":
+                person["name"] = info
+            elif what == 'math' and person["name"] == name:
+                person["grades"]["math"] = info
+            elif what == 'history' and name == person["name"]:
+                person[name]["grades"]["history"] = info
+            elif what == 'physics' and name == person["name"]:
+                person[name]["grades"]["physics"] = info
+        logging.info(f"info about {person} was updated")
+
+
+
+    def get_person_contacts(self, name):
+        for person in self.data:
+            if person["name"] == name:
+                logging.info(f"info about {person}")
+                return person
+
+    def get_projects(self, name):
+        for person in self.data:
+            if name == person["name"]:
+                result = person["grades"]
+                logging.info(f"info about {name} is {result}")
+                return result
+                
+       
+
+    def analyze_data(self, name):
+        for person in self.data:
+            if name == person["name"]:
+                result = [person.get("grades").get("math"), person.get("grades").get("history"), person.get("grades").get("physics")]
+                logging.info(f"Several makr for {name} - {sum(result) / len(result)}")
+
+    def save_update(self):
+        try:
+            with open(self.filepath, "w") as file:
+                json.dump(self.data, file, indent=4)
+                logging.info(f"Saving succesfull")
+        except Exception as e:
+            logging.exception(f"was error {e}")
+
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        filename='app.log',  
+        level=logging.DEBUG,  # for all levels
+        format='%(asctime)s - %(levelname)s - %(message)s' 
+    )
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)  # Уровень логирования для консоли
+    console_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(console_formatter)
+
+
+    logging.getLogger().addHandler(console_handler)
+    example = DataManager("new_text.json")
+    example.add_person("Alex", 80, 90, 90)
+    # example.update_person_info("Alex", "math", 50)
+    # example.get_person_contacts("Charlie")
+    example.get_projects("Charlie")
+    example.analyze_data("Charlie")
+    # example.save_update()
+
+
+"""
+46 Если ты хочешь, чтобы все необработанные ошибки автоматически попадали в логи, 
+ты можешь использовать специальную настройку, например, с использованием sys.excepthook.
+Таким образом, даже если ты не логируешь ошибки вручную, они могут быть записаны в лог через глобальный обработчик ошибок.
+"""
+
+import logging
+import sys
+
+logging.basicConfig(level=logging.ERROR)
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if not issubclass(exc_type, KeyboardInterrupt):
+        logging.error("Необработанное исключение", exc_info=(exc_type, exc_value, exc_traceback))
+
+sys.excepthook = handle_exception
+
+# Пример ошибки
+1 / 0  # Это вызовет ZeroDivisionError и автоматически попадет в лог
+
+
+"""
+47 Asyncio and Pytest
+"""
+
+import pytest
+import asyncio
+from random import randint
+import logging
+import functools
+
+logging.basicConfig(filename="new_app.log", level=logging.INFO, format='%(asctime)s - %(message)s')
+
+def log_execution(func):
+    @functools.wraps(func)
+    async def inner(*args, **kwargs):
+        logging.info(f"Executing {func.__name__}")
+        result = await func(*args, **kwargs)
+        logging.info(f"Finished {func.__name__}")
+        return result
+    return inner
+
+def rand_int():
+    a = randint(1, 6)
+    logging.info(f"info for testing {a}")
+    return a
+
+@log_execution
+async def calculate():
+    await asyncio.sleep(randint(1, 3))  # Simulate 
+    return 4
+
+@log_execution
+async def first():
+    await asyncio.sleep(randint(1, 3))  
+    return 3
+
+@pytest.mark.asyncio
+async def test_concurrent_execution():
+   
+    results = await asyncio.gather(
+        calculate(),
+        first(),
+    )
+    logging.info(f"Results: {results}")
+
+if __name__ == "__main__":
+    pytest.main()
