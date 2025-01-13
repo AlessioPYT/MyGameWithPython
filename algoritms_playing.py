@@ -970,19 +970,16 @@ print(sumari(2, 3))
         Учтите, что факториал отрицательного числа не определен.
 """
 
-def facto(func):
-    def inner(*args):
-        n = args[0]
+def exception(func):
+    def inner(n: int):
         if n == 0 or n == 1:
             return 1
-        return func(*args)
+        return func(n)
     return inner
 
-@facto
-def factorial(n):
+@exception
+def factorial(n: int) -> int:
     return n * factorial(n - 1)
-    
-print(factorial(5))
 
 """
         3. Палиндром: Напишите функцию, которая принимает строку и возвращает True, 
@@ -1385,3 +1382,29 @@ async def test_concurrent_execution():
 
 if __name__ == "__main__":
     pytest.main()
+
+
+"""
+47 
+"""
+def fizzbuzz():
+    return list(map(lambda x: "FizzBuzz" if x % 3 == 0 and x % 5 == 0  
+                    else "Buzz" if x % 5 == 0 
+                    else "Fizz" if x % 3 == 0  
+                    else x, range(1, 51)))
+
+print(fizzbuzz())
+
+
+"""
+48
+"""
+
+def word_frequency(text: str) -> dict:
+    # a = {word: text.split().count(word) for word in set(text.split())} # по старинке, проще
+    a = dict(map(lambda x: (x, text.split().count(x)), set(text.split()))) # через мап как то понятнее и удобнее
+    return dict(sorted(a.items(), key=lambda x: x[1])) # сортировка по значению
+    #return dict(sorted(a.items())) # сортировка по ключу полегче
+print(word_frequency("apple banana apple orange banana apple"))
+
+
